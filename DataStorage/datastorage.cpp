@@ -32,12 +32,13 @@ char DataStorage::at(qint64 i)
 
 }
 
-qint64 DataStorage::size()
+
+qint64 DataStorage::size() const
 {
     return this->fileSize;
 }
 
-int DataStorage::numberOfBlocks()
+int DataStorage::numberOfBlocks() const
 {
     int blockNumbers = (qint64) fileSize / (qint64) BYTESINMEMORY;
     // Additional block for rounding up

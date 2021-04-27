@@ -5,7 +5,7 @@
 #include <QAbstractScrollArea>
 #include <QSharedPointer>
 
-#include "linenumberarea.h"
+#include "addresspane.h"
 #include "DataStorage/datastorage.h"
 
 class ViewingPane : public QAbstractScrollArea
@@ -15,17 +15,22 @@ public:
     explicit ViewingPane(QWidget *parent = nullptr);
 
     void setData(const QSharedPointer<DataStorage>& dataStorage);
-    void updatePanes();
+    int numberOfLines() const;
+    int getCharWidth() const;
+    int getCharHeight() const;
 
 signals:
+    void dataChanged();
 
 private:
     int numberOfDigits(qint64 number);
     int numberOfDigitsPerByte();
 
     int getEncodingPaneWidth();
-    int numberOfAddressPaneCharacters();
-    int getAddressPaneWidth();
+//    int numberOfAddressPaneCharacters();
+//    int getAddressPaneWidth();
+
+
 
     const int columns = 16;
     const int base = 10;
@@ -33,7 +38,7 @@ private:
     int charWidth = 10;
     int charHeight = 10;
 
-    LineNumberArea* lineNumberArea;
+    AddressPane* addresPane;
     QSharedPointer<DataStorage> dataStorage;
 
 

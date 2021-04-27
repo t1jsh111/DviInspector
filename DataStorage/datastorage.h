@@ -28,9 +28,9 @@ public:
     char at(qint64 i);
 
     // Size in number of bytes of the file
-    qint64 size();
+    qint64 size() const;
     // Number of blocks of size BYTESINMEMORY that are needed for the file
-    int numberOfBlocks();
+    int numberOfBlocks() const;
 
 private:
     // Sets arrayInMemory to the bytes that fall into the block with number blockNumber

@@ -17,8 +17,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     DataStorage/datastorage.cpp \
+    ViewingPane/addresspane.cpp \
     ViewingPane/decodingpane.cpp \
-    ViewingPane/linenumberarea.cpp \
     main.cpp \
     mainwindow.cpp \
     ViewingPane/rawpane.cpp \
@@ -27,8 +27,8 @@ SOURCES += \
 
 HEADERS += \
     DataStorage/datastorage.h \
+    ViewingPane/addresspane.h \
     ViewingPane/decodingpane.h \
-    ViewingPane/linenumberarea.h \
     mainwindow.h \
     ViewingPane/rawpane.h \
     ViewingPane/translationpane.h \

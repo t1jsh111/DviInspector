@@ -1,6 +1,9 @@
 #include "viewingpane.h"
+#include "decodingpane.h"
 #include <QDebug>
 #include <QHBoxLayout>
+#include <QDebug>
+
 
 
 const int MIN_NUMBER_OF_ADDRESS_PANE_CHARS = 2;
@@ -19,10 +22,14 @@ ViewingPane::ViewingPane(QWidget *parent) : QAbstractScrollArea(parent)
     this->setLayout(hlayout);
 
 
-    lineNumberArea = new LineNumberArea;
-    lineNumberArea->setFixedWidth(getAddressPaneWidth());
-    hlayout->addWidget(lineNumberArea);
+    addresPane = new AddressPane(this);
+    connect(this, SIGNAL(dataChanged()), addresPane, SLOT(updateWidth()));
+    //addresPane->setFixedWidth(100);
+
+    //lineNumberArea->setFixedWidth(getAddressPaneWidth());
+    hlayout->addWidget(addresPane);
     hlayout->addStretch(1);
+
 
 
 }
@@ -30,14 +37,10 @@ ViewingPane::ViewingPane(QWidget *parent) : QAbstractScrollArea(parent)
 void ViewingPane::setData(const QSharedPointer<DataStorage> &dataStorage)
 {
     this->dataStorage = dataStorage;
-    updatePanes();
+    qInfo() << "dataChanged";
+    emit dataChanged();
 }
 
-void ViewingPane::updatePanes()
-{
-    lineNumberArea->setFixedWidth(getAddressPaneWidth());
-    lineNumberArea->update();
-}
 
 void ViewingPane::resizeEvent(QResizeEvent *event)
 {
@@ -49,7 +52,26 @@ void ViewingPane::resizeEvent(QResizeEvent *event)
 //    lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), 50, cr.height()));
 }
 
+int ViewingPane::numberOfLines() const
+{
+//    int numberOfLines = 0;
+//    if(bytesPerLine <= 0 || totalNumberOfBytes <= 0) return numberOfLines;
+    int totalNumberOfBytes = dataStorage->size();
+    int noLines = totalNumberOfBytes / columns;
+    if(totalNumberOfBytes / columns ) noLines++;
+    qInfo() << "noOfLines" << noLines;
+    return noLines;
+}
 
+int ViewingPane::getCharWidth() const
+{
+    return this->charWidth;
+}
+
+int ViewingPane::getCharHeight() const
+{
+    return this->charHeight;
+}
 
 int ViewingPane::getEncodingPaneWidth()
 {
@@ -69,14 +91,10 @@ int ViewingPane::numberOfDigitsPerByte()
     return QString::number(255, base).size();
 }
 
-int ViewingPane::numberOfAddressPaneCharacters()
-{
-    if(!dataStorage) return MIN_NUMBER_OF_ADDRESS_PANE_CHARS;
+//int ViewingPane::numberOfAddressPaneCharacters()
+//{
+//    if(!dataStorage) return MIN_NUMBER_OF_ADDRESS_PANE_CHARS;
 
-    return std::max(numberOfDigits(dataStorage->size()), MIN_NUMBER_OF_ADDRESS_PANE_CHARS);
-}
+//    return std::max(numberOfDigits(dataStorage->size()), MIN_NUMBER_OF_ADDRESS_PANE_CHARS);
+//}
 
-int ViewingPane::getAddressPaneWidth()
-{
-    return numberOfAddressPaneCharacters() * charWidth;
-}
