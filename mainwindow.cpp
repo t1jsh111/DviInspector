@@ -3,6 +3,7 @@
 
 #include <QFileDialog>
 #include <QSharedPointer>
+#include <QDebug>
 #include "ViewingPane/viewingpane.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -21,6 +22,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_actionOpen_triggered()
 {
     QString filePath = QFileDialog::getOpenFileName(this);
+    if(filePath.isEmpty()) return;
 
     QSharedPointer<DataStorage> dataStorage = QSharedPointer<DataStorage>(new DataStorage(filePath));
 

@@ -56,9 +56,6 @@ void RawPane::paintEvent(QPaintEvent *event)
     DataStorage* dataStorage = viewingPane->getDataStorage();
 
     if(!dataStorage) return;
-    qInfo() << "datastorage size" << dataStorage->size();
-
-    qInfo() << "firstLineNumber" << firstLineNumber;
 
     for(int i = 0; i < numberOfVisibleLines; i++) {
         int lineNumber = firstLineNumber + i;

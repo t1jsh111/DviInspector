@@ -31,12 +31,17 @@ ViewingPane::ViewingPane(QWidget *parent) : QAbstractScrollArea(parent)
     rawPane = new RawPane(this);
 
 
+
+
     hlayout->addWidget(addresPane);
     hlayout->addWidget(rawPane);
     hlayout->addStretch(1);
 
     // TODO: Find a better way to set the minimum size so that all widgets in the viewport fit
-    setMinimumWidth(addresPane->width() + rawPane->width() + 50);
+    setMinimumWidth(viewport()->width());
+    //resize(addresPane->width() + rawPane->width() + 50, 300);
+    qInfo() << "viewport width" << viewport()->width() << "viewport min width" << viewport()->minimumWidth() << " scrollarea minimum width" << this->minimumWidth();
+    qInfo() << "set width addresPane->width() + rawPane->width() + 50 " <<addresPane->width() + rawPane->width() + 50;
 
 
 
@@ -45,8 +50,11 @@ ViewingPane::ViewingPane(QWidget *parent) : QAbstractScrollArea(parent)
 void ViewingPane::setData(const QSharedPointer<DataStorage> &dataStorage)
 {
     this->dataStorage = dataStorage;
-    qInfo() << "dataChanged";
     emit dataChanged();
+    //setMinimumWidth(addresPane->width;() + rawPane->width()+ 40 );
+    setMinimumWidth(viewport()->width());
+    qInfo() << "viewport width" << viewport()->width() << "viewport min width" << viewport()->minimumWidth() << " scrollarea minimum width" << this->minimumWidth();
+
 }
 
 
