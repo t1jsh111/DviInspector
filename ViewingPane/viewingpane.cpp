@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QHBoxLayout>
 #include <QDebug>
+#include <QScrollBar>
 
 
 
@@ -24,11 +25,15 @@ ViewingPane::ViewingPane(QWidget *parent) : QAbstractScrollArea(parent)
 
     addresPane = new AddressPane(this);
     connect(this, SIGNAL(dataChanged()), addresPane, SLOT(updateWidth()));
+    // When data is changed, the scrollbars need to adapt accordingly...
+    connect(this, SIGNAL(dataChanged()), this, SLOT(setScrollBar()));
+
     //addresPane->setFixedWidth(100);
 
     //lineNumberArea->setFixedWidth(getAddressPaneWidth());
     hlayout->addWidget(addresPane);
     hlayout->addStretch(1);
+
 
 
 
@@ -52,14 +57,34 @@ void ViewingPane::resizeEvent(QResizeEvent *event)
 //    lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), 50, cr.height()));
 }
 
+int ViewingPane::visibleNumberOfLines() const
+{
+    int noLines = numberOfLines();
+    int noLinesThatFitInView = numberOfLinesThatFitInView();
+    if(noLines > noLinesThatFitInView) {
+        return noLinesThatFitInView;
+    } else {
+        return noLines;
+    }
+}
+
+int ViewingPane::invisibleNumberOfLines() const
+{
+    return numberOfLines() - visibleNumberOfLines();
+}
+
+int ViewingPane::numberOfLinesThatFitInView() const
+{
+    return viewport()->size().height() / charHeight;
+}
+
 int ViewingPane::numberOfLines() const
 {
-//    int numberOfLines = 0;
-//    if(bytesPerLine <= 0 || totalNumberOfBytes <= 0) return numberOfLines;
+    if(!dataStorage) return 0;
+
     int totalNumberOfBytes = dataStorage->size();
     int noLines = totalNumberOfBytes / columns;
-    if(totalNumberOfBytes / columns ) noLines++;
-    qInfo() << "noOfLines" << noLines;
+    if(totalNumberOfBytes % columns != 0) noLines++;
     return noLines;
 }
 
@@ -73,28 +98,32 @@ int ViewingPane::getCharHeight() const
     return this->charHeight;
 }
 
-int ViewingPane::getEncodingPaneWidth()
+int ViewingPane::getColumns() const
+{
+    return this->columns;
+}
+
+void ViewingPane::setScrollBar()
+{
+    // setting up scrolling line by line...,
+    verticalScrollBar()->setPageStep(numberOfLinesThatFitInView());
+    verticalScrollBar()->setRange(0, invisibleNumberOfLines());
+}
+
+int ViewingPane::getEncodingPaneWidth() const
 {
     return columns*numberOfDigitsPerByte()*charWidth;
 }
 
-
-
-int ViewingPane::numberOfDigits(qint64 number)
+int ViewingPane::numberOfDigits(qint64 number) const
 {
     return QString::number(number, base).size();
 }
 
-int ViewingPane::numberOfDigitsPerByte()
+int ViewingPane::numberOfDigitsPerByte() const
 {
     // return how many digits needed in base to represent byte 1111 1111
     return QString::number(255, base).size();
 }
 
-//int ViewingPane::numberOfAddressPaneCharacters()
-//{
-//    if(!dataStorage) return MIN_NUMBER_OF_ADDRESS_PANE_CHARS;
-
-//    return std::max(numberOfDigits(dataStorage->size()), MIN_NUMBER_OF_ADDRESS_PANE_CHARS);
-//}
 

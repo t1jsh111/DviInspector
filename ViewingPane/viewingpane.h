@@ -15,18 +15,29 @@ public:
     explicit ViewingPane(QWidget *parent = nullptr);
 
     void setData(const QSharedPointer<DataStorage>& dataStorage);
+
     int numberOfLines() const;
+    int visibleNumberOfLines() const;
+    int invisibleNumberOfLines() const;
+    int numberOfLinesThatFitInView() const;
+
     int getCharWidth() const;
     int getCharHeight() const;
+
+    int getColumns() const;
 
 signals:
     void dataChanged();
 
-private:
-    int numberOfDigits(qint64 number);
-    int numberOfDigitsPerByte();
+private slots:
+    void setScrollBar();
 
-    int getEncodingPaneWidth();
+private:
+    int numberOfDigits(qint64 number) const;
+    int numberOfDigitsPerByte() const;
+    int getEncodingPaneWidth() const;
+
+
 //    int numberOfAddressPaneCharacters();
 //    int getAddressPaneWidth();
 

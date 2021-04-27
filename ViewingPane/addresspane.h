@@ -10,7 +10,8 @@ class AddressPane : public QWidget
     Q_OBJECT
 public:
     explicit AddressPane(ViewingPane *parent = nullptr);
-    int getAddressPaneWidth();
+    int getAddressPaneWidth() const;
+    int numberOfAddressPaneCharacters() const;
 
 public slots:
     void updateWidth();
@@ -23,7 +24,7 @@ protected:
 
 private:
     ViewingPane* viewingPane;
-    int numberOfDigits(qint64 number);
+    int numberOfDigits(qint64 number) const;
     int base = 10;
 
 
