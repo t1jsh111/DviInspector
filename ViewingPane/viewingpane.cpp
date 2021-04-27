@@ -38,7 +38,7 @@ ViewingPane::ViewingPane(QWidget *parent) : QAbstractScrollArea(parent)
     hlayout->addStretch(1);
 
     // TODO: Find a better way to set the minimum size so that all widgets in the viewport fit
-    setMinimumWidth(viewport()->width());
+    setMinimumWidth(getChildrenWidth());
     //resize(addresPane->width() + rawPane->width() + 50, 300);
     qInfo() << "viewport width" << viewport()->width() << "viewport min width" << viewport()->minimumWidth() << " scrollarea minimum width" << this->minimumWidth();
     qInfo() << "set width addresPane->width() + rawPane->width() + 50 " <<addresPane->width() + rawPane->width() + 50;
@@ -52,8 +52,8 @@ void ViewingPane::setData(const QSharedPointer<DataStorage> &dataStorage)
     this->dataStorage = dataStorage;
     emit dataChanged();
     //setMinimumWidth(addresPane->width;() + rawPane->width()+ 40 );
-    setMinimumWidth(viewport()->width());
-    qInfo() << "viewport width" << viewport()->width() << "viewport min width" << viewport()->minimumWidth() << " scrollarea minimum width" << this->minimumWidth();
+    setMinimumWidth(getChildrenWidth());
+
 
 }
 
@@ -129,6 +129,19 @@ void ViewingPane::setScrollBar()
 int ViewingPane::getEncodingPaneWidth() const
 {
     return columns*numberOfDigitsPerColumn()*charWidth;
+}
+
+
+int ViewingPane::getChildrenWidth() const
+{
+    // TODO: This is still rather awkward...
+    // In particular manually children need to be added
+    // And a fixed padding of 40 is added whereas we desire it to be adjusted to the scrollbar.
+    int totalWidth = 0;
+    totalWidth += addresPane->width();
+    totalWidth += rawPane->width();
+    totalWidth += 40;
+    return totalWidth;
 }
 
 int ViewingPane::numberOfDigits(qint64 number) const

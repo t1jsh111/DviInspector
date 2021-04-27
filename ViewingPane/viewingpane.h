@@ -45,6 +45,7 @@ private:
     int numberOfDigits(qint64 number) const;
 
     int getEncodingPaneWidth() const;
+    int getChildrenWidth() const;
 
 
 //    int numberOfAddressPaneCharacters();
