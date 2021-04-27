@@ -25,7 +25,7 @@ protected:
 private:
     ViewingPane* viewingPane;
     int numberOfDigits(qint64 number) const;
-    int base = 10;
+    const int base = 10;
 
 
 

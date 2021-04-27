@@ -14,6 +14,7 @@ int MINIMUM_ADDRESS_PANE_WIDTH = 0;
 AddressPane::AddressPane(ViewingPane *parent) : QWidget(parent)
 {
     this->viewingPane = parent;
+    updateWidth();
 }
 
 int AddressPane::getAddressPaneWidth() const
@@ -21,12 +22,18 @@ int AddressPane::getAddressPaneWidth() const
    if(!viewingPane) return MINIMUM_ADDRESS_PANE_WIDTH;
 
    int numberOfDigitsInAddressPane = numberOfAddressPaneCharacters();
-   return qMax(numberOfDigitsInAddressPane * viewingPane->getCharWidth(), MINIMUM_ADDRESS_PANE_WIDTH);
+   int width = qMax(numberOfDigitsInAddressPane * viewingPane->getCharWidth(), MINIMUM_ADDRESS_PANE_WIDTH);
+   qInfo() << "AddressPaneWidth " << width;
+   qInfo() << "numberOfDigitsInAddressPane " << numberOfDigitsInAddressPane;
+   return width;
 }
 
 int AddressPane::numberOfAddressPaneCharacters() const
 {
-    int numberOfDigitsInAddressPane = numberOfDigits(viewingPane->numberOfLines() * viewingPane->getColumns());
+    int highestAddress = viewingPane->numberOfLines() * viewingPane->getColumns();
+    // TODO: reconsider the zero case....
+    if(highestAddress == 0) return 0;
+    int numberOfDigitsInAddressPane = numberOfDigits(highestAddress);
     return numberOfDigitsInAddressPane;
 }
 
@@ -40,18 +47,19 @@ void AddressPane::updateWidth()
 
 void AddressPane::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
-    painter.fillRect(event->rect(), Qt::lightGray);
+    QColor paneColor = palette().color(QPalette::Midlight);
+    painter.fillRect(event->rect(), QBrush(paneColor));
 
     int firstLineNumber = viewingPane->verticalScrollBar()->value();
     int numberOfVisibleLines = viewingPane->visibleNumberOfLines();
     int bytesPerLine = viewingPane->getColumns();
-    qInfo() << "firstLineNumber" << firstLineNumber;
+    //qInfo() << "firstLineNumber" << firstLineNumber;
     for(int i = 0; i < numberOfVisibleLines; i++) {
         int lineNumber = firstLineNumber + i;
         QString address = QString("%1").arg((qint64) lineNumber * (qint64) bytesPerLine, numberOfAddressPaneCharacters(), base, QChar('0'));
 
         int yPos = (i+1) * viewingPane->getCharHeight();
-        painter.setPen(Qt::black);
+        //painter.setPen(Qt::black);
         painter.drawText(0, yPos, address);
 
     }

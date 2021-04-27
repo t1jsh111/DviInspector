@@ -7,6 +7,7 @@
 
 #include "addresspane.h"
 #include "DataStorage/datastorage.h"
+#include "rawpane.h"
 
 class ViewingPane : public QAbstractScrollArea
 {
@@ -26,6 +27,14 @@ public:
 
     int getColumns() const;
 
+    int numberOfDigitsPerColumn() const;
+
+    // TODO: invent cleaner solution for this...
+    void scroll(QWheelEvent *event);
+
+    DataStorage* getDataStorage();
+
+
 signals:
     void dataChanged();
 
@@ -34,7 +43,7 @@ private slots:
 
 private:
     int numberOfDigits(qint64 number) const;
-    int numberOfDigitsPerByte() const;
+
     int getEncodingPaneWidth() const;
 
 
@@ -50,12 +59,14 @@ private:
     int charHeight = 10;
 
     AddressPane* addresPane;
+    RawPane* rawPane;
     QSharedPointer<DataStorage> dataStorage;
 
 
     // QWidget interface
 protected:
     void resizeEvent(QResizeEvent *event);
+    void paintEvent(QPaintEvent *event);
 };
 
 #endif // VIEWINGPANE_H

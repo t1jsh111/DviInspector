@@ -7,8 +7,6 @@
 
 
 
-const int MIN_NUMBER_OF_ADDRESS_PANE_CHARS = 2;
-
 ViewingPane::ViewingPane(QWidget *parent) : QAbstractScrollArea(parent)
 {
 
@@ -18,8 +16,10 @@ ViewingPane::ViewingPane(QWidget *parent) : QAbstractScrollArea(parent)
     charHeight = fontMetrics().height();
 
     QHBoxLayout* hlayout = new QHBoxLayout;
+    //hlayout->setSpacing(0);
     hlayout->setContentsMargins(0,0,0,0);
     this->setContentsMargins(0,0,0,0);
+    this->setViewportMargins(0,0,0,0);
     this->setLayout(hlayout);
 
 
@@ -28,12 +28,15 @@ ViewingPane::ViewingPane(QWidget *parent) : QAbstractScrollArea(parent)
     // When data is changed, the scrollbars need to adapt accordingly...
     connect(this, SIGNAL(dataChanged()), this, SLOT(setScrollBar()));
 
-    //addresPane->setFixedWidth(100);
+    rawPane = new RawPane(this);
 
-    //lineNumberArea->setFixedWidth(getAddressPaneWidth());
+
     hlayout->addWidget(addresPane);
+    hlayout->addWidget(rawPane);
     hlayout->addStretch(1);
 
+    // TODO: Find a better way to set the minimum size so that all widgets in the viewport fit
+    setMinimumWidth(addresPane->width() + rawPane->width() + 50);
 
 
 
@@ -54,7 +57,12 @@ void ViewingPane::resizeEvent(QResizeEvent *event)
     QRect cr = contentsRect();
 
 //    qInfo() << "cr.left()" << cr.left() << "cr.right()" << cr.right();
-//    lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), 50, cr.height()));
+    //    lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), 50, cr.height()));
+}
+
+void ViewingPane::paintEvent(QPaintEvent *event)
+{
+    //setScrollBar();
 }
 
 int ViewingPane::visibleNumberOfLines() const
@@ -112,7 +120,7 @@ void ViewingPane::setScrollBar()
 
 int ViewingPane::getEncodingPaneWidth() const
 {
-    return columns*numberOfDigitsPerByte()*charWidth;
+    return columns*numberOfDigitsPerColumn()*charWidth;
 }
 
 int ViewingPane::numberOfDigits(qint64 number) const
@@ -120,10 +128,22 @@ int ViewingPane::numberOfDigits(qint64 number) const
     return QString::number(number, base).size();
 }
 
-int ViewingPane::numberOfDigitsPerByte() const
+int ViewingPane::numberOfDigitsPerColumn() const
 {
     // return how many digits needed in base to represent byte 1111 1111
     return QString::number(255, base).size();
 }
+
+void ViewingPane::scroll(QWheelEvent *event)
+{
+    this->wheelEvent(event);
+}
+
+DataStorage *ViewingPane::getDataStorage()
+{
+    return this->dataStorage.get();
+}
+
+
 
 
