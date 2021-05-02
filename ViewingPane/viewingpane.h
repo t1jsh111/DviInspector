@@ -8,6 +8,7 @@
 #include "addresspane.h"
 #include "DataStorage/datastorage.h"
 #include "rawpane.h"
+#include "decodingpane.h"
 
 class ViewingPane : public QAbstractScrollArea
 {
@@ -46,6 +47,7 @@ private:
 
     int getEncodingPaneWidth() const;
     int getChildrenWidth() const;
+    int getMinimumWidth() const;
 
 
 //    int numberOfAddressPaneCharacters();
@@ -61,6 +63,8 @@ private:
 
     AddressPane* addresPane;
     RawPane* rawPane;
+    DecodingPane* decodingPane;
+
     QSharedPointer<DataStorage> dataStorage;
 
 
@@ -68,6 +72,11 @@ private:
 protected:
     void resizeEvent(QResizeEvent *event);
     void paintEvent(QPaintEvent *event);
+
+    // QAbstractScrollArea interface
+protected:
+    void scrollContentsBy(int dx, int dy);
+    QWidget* scollAreaContents;
 };
 
 #endif // VIEWINGPANE_H

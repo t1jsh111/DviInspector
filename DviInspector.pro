@@ -19,6 +19,7 @@ SOURCES += \
     DataStorage/datastorage.cpp \
     ViewingPane/addresspane.cpp \
     ViewingPane/decodingpane.cpp \
+    ViewingPane/viewingpanescrollingarea.cpp \
     main.cpp \
     mainwindow.cpp \
     ViewingPane/rawpane.cpp \
@@ -29,6 +30,7 @@ HEADERS += \
     DataStorage/datastorage.h \
     ViewingPane/addresspane.h \
     ViewingPane/decodingpane.h \
+    ViewingPane/viewingpanescrollingarea.h \
     mainwindow.h \
     ViewingPane/rawpane.h \
     ViewingPane/translationpane.h \

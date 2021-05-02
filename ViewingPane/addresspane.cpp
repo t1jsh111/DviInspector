@@ -23,8 +23,6 @@ int AddressPane::getAddressPaneWidth() const
 
    int numberOfDigitsInAddressPane = numberOfAddressPaneCharacters();
    int width = qMax(numberOfDigitsInAddressPane * viewingPane->getCharWidth(), MINIMUM_ADDRESS_PANE_WIDTH);
-   qInfo() << "AddressPaneWidth " << width;
-   qInfo() << "numberOfDigitsInAddressPane " << numberOfDigitsInAddressPane;
    return width;
 }
 

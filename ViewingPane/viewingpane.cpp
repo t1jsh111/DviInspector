@@ -4,6 +4,7 @@
 #include <QHBoxLayout>
 #include <QDebug>
 #include <QScrollBar>
+#include <QWidget>
 
 
 
@@ -11,16 +12,19 @@ ViewingPane::ViewingPane(QWidget *parent) : QAbstractScrollArea(parent)
 {
 
     // Note that font is passed to childwidgets, which is desirable behaviour for our case...
-    setFont(QFont("Courier", 10));
+    setFont(QFont("Courier", 6));
     charWidth = fontMetrics().horizontalAdvance(QLatin1Char('0'));
     charHeight = fontMetrics().height();
+
+    scollAreaContents = new QWidget(this);
 
     QHBoxLayout* hlayout = new QHBoxLayout;
     //hlayout->setSpacing(0);
     hlayout->setContentsMargins(0,0,0,0);
     this->setContentsMargins(0,0,0,0);
     this->setViewportMargins(0,0,0,0);
-    this->setLayout(hlayout);
+    scollAreaContents->setLayout(hlayout);
+    this->setViewport(scollAreaContents);
 
 
     addresPane = new AddressPane(this);
@@ -29,16 +33,18 @@ ViewingPane::ViewingPane(QWidget *parent) : QAbstractScrollArea(parent)
     connect(this, SIGNAL(dataChanged()), this, SLOT(setScrollBar()));
 
     rawPane = new RawPane(this);
+    decodingPane = new DecodingPane(this);
 
 
 
 
     hlayout->addWidget(addresPane);
     hlayout->addWidget(rawPane);
+    hlayout->addWidget(decodingPane);
     hlayout->addStretch(1);
 
     // TODO: Find a better way to set the minimum size so that all widgets in the viewport fit
-    setMinimumWidth(getChildrenWidth());
+    setMinimumWidth(getMinimumWidth());
     //resize(addresPane->width() + rawPane->width() + 50, 300);
     qInfo() << "viewport width" << viewport()->width() << "viewport min width" << viewport()->minimumWidth() << " scrollarea minimum width" << this->minimumWidth();
     qInfo() << "set width addresPane->width() + rawPane->width() + 50 " <<addresPane->width() + rawPane->width() + 50;
@@ -52,7 +58,7 @@ void ViewingPane::setData(const QSharedPointer<DataStorage> &dataStorage)
     this->dataStorage = dataStorage;
     emit dataChanged();
     //setMinimumWidth(addresPane->width;() + rawPane->width()+ 40 );
-    setMinimumWidth(getChildrenWidth());
+    setMinimumWidth(getMinimumWidth());
 
 
 }
@@ -71,6 +77,24 @@ void ViewingPane::resizeEvent(QResizeEvent *event)
 void ViewingPane::paintEvent(QPaintEvent *event)
 {
     //setScrollBar();
+}
+
+void ViewingPane::scrollContentsBy(int dx, int dy)
+{
+    //this->viewport()->move(dx,0);
+    //QPoint topLeft = viewport()->rect().topLeft();
+    //this->viewport()->layout()->m move(topLeft.x() - dx ,0);
+    this->scollAreaContents->move(dx+5,0);
+    int hvalue = horizontalScrollBar()->value();
+    int vvalue = verticalScrollBar()->value();
+    QPoint topLeft = viewport()->rect().topLeft();
+
+    qInfo() << "topLeft.x() - hvalue" << topLeft.x() - hvalue;
+    //qInfo() << "topLeft.y() - vvalue" << topLeft.y() - vvalue;
+
+    scollAreaContents->move(topLeft.x() - hvalue, 0);
+    QAbstractScrollArea::scrollContentsBy(dx,dy);
+    scollAreaContents->update();
 }
 
 int ViewingPane::visibleNumberOfLines() const
@@ -124,6 +148,8 @@ void ViewingPane::setScrollBar()
     // setting up scrolling line by line...,
     verticalScrollBar()->setPageStep(numberOfLinesThatFitInView());
     verticalScrollBar()->setRange(0, invisibleNumberOfLines());
+    horizontalScrollBar()->setSingleStep(charWidth);
+    horizontalScrollBar()->setRange(0,getChildrenWidth() - getMinimumWidth());
 }
 
 int ViewingPane::getEncodingPaneWidth() const
@@ -133,6 +159,17 @@ int ViewingPane::getEncodingPaneWidth() const
 
 
 int ViewingPane::getChildrenWidth() const
+{
+    // TODO: This is still rather awkward...
+    // In particular manually children need to be added
+    int totalWidth = 0;
+    totalWidth += addresPane->width();
+    totalWidth += rawPane->width();
+    totalWidth += decodingPane->width();
+    return totalWidth;
+}
+
+int ViewingPane::getMinimumWidth() const
 {
     // TODO: This is still rather awkward...
     // In particular manually children need to be added
